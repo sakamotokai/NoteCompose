@@ -130,6 +130,6 @@ fun LessAboutScreen(
         peekHeight = 60.dp,
         headerHeight = 160.dp
     ) {
-//coment
+
     }
 }
