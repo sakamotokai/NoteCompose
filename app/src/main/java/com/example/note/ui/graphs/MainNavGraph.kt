@@ -76,12 +76,24 @@ fun MainNavGraph(navController: NavHostController,LessState:(unit:Unit)->Unit) {
                 backAboutScreen ={navController.navigate(Route.LessAboutScreen.route)},
                 closeBackDrop = {backdropState ->
                     backdropScaffoldState = backdropState
-                }
+                },
+                whereScreen = whereScreenForBottonBar.mainScreen
             )
         }
 
         composable(route = Route.LessAboutSelectedScreen.route) {
             LessAboutScreen(
+                onClick = { navController.navigate(Route.LessAboutSelectedScreen.route) },
+                navigateTo = Route.MainScreen.route,
+                scaffoldStateUpdate = {backdropScaffoldState = it},
+                scaffoldState = backdropScaffoldState,
+                backAboutScreen ={navController.navigate(Route.LessAboutSelectedScreen.route)},
+                closeBackDrop = {backdropState ->
+                    backdropScaffoldState = backdropState
+                },
+                whereScreen = whereScreenForBottonBar.selectedScreen
+            )
+        /*LessAboutScreen(
                 onClick = { navController.navigate(Route.LessAboutSelectedScreen.route) },
                 navigateTo = Route.LessAboutSelectedScreen.route,
                 updateBackground = {
@@ -91,7 +103,7 @@ fun MainNavGraph(navController: NavHostController,LessState:(unit:Unit)->Unit) {
                     )
                 },
                 updateBackgroundBoolean = true
-            )
+            )*/
         }
     }
 }

@@ -36,6 +36,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
+enum class whereScreenForBottonBar {
+    mainScreen, selectedScreen
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
@@ -45,7 +49,8 @@ fun MainScreen(
     onClick: () -> Unit = {},
     bottomBarVisibility: Boolean = true,
     floatingButtonVisibility: Boolean = true,
-    scaffoldStateUpdate: (scaffoldState: BackdropScaffoldState) -> Unit = {}
+    scaffoldStateUpdate: (scaffoldState: BackdropScaffoldState) -> Unit = {},
+    whereScreen:whereScreenForBottonBar = whereScreenForBottonBar.mainScreen
 ) {
     val context = LocalContext.current
     val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -81,6 +86,7 @@ fun MainScreen(
     ) {
         var text by remember { mutableStateOf("") }
         val list by globalDao.getAllModelsdb().observeAsState(listOf())
+        val list2 by globalDao.getAllSelected().observeAsState(listOf())
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -94,7 +100,9 @@ fun MainScreen(
                     .padding(start = 20.dp, top = 20.dp, end = 20.dp)
                     .weight(1f)
             ) {
-                items(list.reversed()) { item ->
+                items(
+                    if(whereScreen == whereScreenForBottonBar.mainScreen) list.reversed()
+                else list2.reversed()) { item ->
                     noteCard(
                         modeldb = item,
                         navController,
@@ -121,7 +129,8 @@ fun LessAboutScreen(
     scaffoldStateUpdate: (scaffoldState: BackdropScaffoldState) -> Unit = {},
     scaffoldState: BackdropScaffoldState = BackdropScaffoldState(BackdropValue.Revealed),
     backAboutScreen: () -> Unit = {},
-    closeBackDrop: (backdropState: BackdropScaffoldState) -> Unit = {}
+    closeBackDrop: (backdropState: BackdropScaffoldState) -> Unit = {},
+    whereScreen: whereScreenForBottonBar = whereScreenForBottonBar.mainScreen
 ) {
     var backdropScaffoldState by remember { mutableStateOf(scaffoldState) }
     BackdropScaffold(
@@ -136,15 +145,25 @@ fun LessAboutScreen(
                     floatingButtonVisibility = false,
                     scaffoldStateUpdate = { state ->
                         scaffoldStateUpdate(state)
-                    }
+                    },
+                    whereScreen = whereScreen
                 )
             }
         } else {
             {
-                SelectedNoteScreen(
+                MainScreen(
+                    bottomBarVisibility = false,
+                    onClick = onClick,
+                    floatingButtonVisibility = false,
+                    scaffoldStateUpdate = { state ->
+                        scaffoldStateUpdate(state)
+                    },
+                    whereScreen = whereScreen
+                )
+                /*SelectedNoteScreen(
                     onClick = onClick,
                     bottomBarVisibility = false
-                )
+                )*/
             }
         },
         frontLayerContent = {
