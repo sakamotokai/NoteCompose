@@ -31,7 +31,6 @@ fun BottomNavGraph(
         LocalContext.current as ComponentActivity
     )
 ) {
-    //TODO("it is todo to me in future, make it, please")
     var saveState by remember{ mutableStateOf(Unit) }
     var tabPage by remember { mutableStateOf(TabPage.HOME) }
     val backgroundColor by animateColorAsState(if (tabPage == TabPage.HOME) Purple700 else Purple500)
@@ -44,7 +43,6 @@ fun BottomNavGraph(
                 tabPage = tabPage,
                 onTabSelected = { tabPage = it },
                 toScreen = {
-                    //TODO("MAKE IT")
                     if (tabPage == TabPage.HOME) {
                         if (viewModel.startDestination.value == Route.FullAboutScreen.route) {
                             navController.navigate(Route.FullAboutScreen.route)

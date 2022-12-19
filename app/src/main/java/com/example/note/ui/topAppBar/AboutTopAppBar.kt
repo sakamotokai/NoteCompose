@@ -17,7 +17,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.note.MainViewModel
 import com.example.note.db.Modeldb
 import com.example.note.doRoom
+import com.example.note.ui.graphs.Route
+import com.example.note.ui.screens.FullAboutScreen
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AboutTopAppBar(
     navController: NavHostController = rememberNavController(),
@@ -29,8 +32,12 @@ fun AboutTopAppBar(
     roomDoing: doRoom = doRoom.insert,
     titleValue: String,
     textValue: String,
-    updateBackground:()->Unit = {},
-    updateBackgroundBoolean: Boolean = false
+    updateBackground: () -> Unit = {},
+    updateBackgroundBoolean: Boolean = false,
+    backStackFun:(backStack:Boolean)->Unit = {},
+    closeForeground:(value:BackdropScaffoldState)->Unit = {},
+    changeModeldb:(modeldb:Modeldb)->Unit = {},
+    navigateToFullScreen:()->Unit={}
 ) {
     val context = LocalContext.current
     //var changeState1 by remember{ mutableStateOf(changeState) }
@@ -40,13 +47,25 @@ fun AboutTopAppBar(
             elevation = 4.dp,
             backgroundColor = MaterialTheme.colors.primarySurface,
             navigationIcon = {
-                IconButton(onClick = { onClick() }) {
+                IconButton(onClick = {
+                    mainViewModel.setModeldb(Modeldb())
+                    //changeModeldb(Modeldb())
+                    closeForeground(BackdropScaffoldState(BackdropValue.Revealed))
+                    onClick()
+                    //navigateToFullScreen()
+                    //navController.navigate(Route.FullAboutScreen.route)
+                    //modeldb = Modeldb()
+
+                    //backStackFun(true)
+                    //onClick()
+                    //modeldb = Modeldb()
+                }) {
                     Icon(Icons.Filled.ArrowBack, null)
                 }
             },
             actions = {
                 IconButton(onClick = {
-                    Toast.makeText(context,modeldb.selected.toString(),Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, modeldb.selected.toString(), Toast.LENGTH_SHORT).show()
                     mainViewModel.updateNote(
                         Modeldb(
                             id = modeldb.id,
@@ -56,7 +75,7 @@ fun AboutTopAppBar(
                         )
                     )
                     modeldb.selected = !modeldb.selected
-                    if(updateBackgroundBoolean) updateBackground()
+                    if (updateBackgroundBoolean) updateBackground()
                 }) {
                     Icon(Icons.Filled.Star, null)
                 }
@@ -73,7 +92,7 @@ fun AboutTopAppBar(
                                 mainViewModel.insertNote(modeldb)
                                 changeStateFun()
                             }
-                            if(updateBackgroundBoolean) updateBackground()
+                            if (updateBackgroundBoolean) updateBackground()
                         }
                     }) {
                         Icon(Icons.Filled.Check, null)

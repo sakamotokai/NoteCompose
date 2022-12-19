@@ -1,6 +1,7 @@
 package com.example.note.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -25,9 +26,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.note.MainViewModel
 import com.example.note.db.Modeldb
 import com.example.note.doRoom
+import com.example.note.ui.graphs.Route
 import com.example.note.ui.topAppBar.AboutTopAppBar
 
 //показывает информацию из земетки(открывается на пол экрана и пользователь может открыть на весь(свайп вверх)
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun FullAboutScreen(
@@ -35,9 +38,12 @@ fun FullAboutScreen(
     navController: NavHostController = rememberNavController(),
     mainViewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity),
     updateBackground: () -> Unit = {},
-    updateBackgroundBoolean: Boolean = false
+    updateBackgroundBoolean: Boolean = false,
+    backStackFun: (backStack: Boolean) -> Unit = {},
+    closeForeground: (value: BackdropScaffoldState) -> Unit = {},
 ) {
-    val modeldb = mainViewModel.getModeldb()
+    var backStack by remember { mutableStateOf(false) }
+    var modeldb = mainViewModel.getModeldb()
     var text by remember { mutableStateOf(modeldb.text) }
     var title by remember { mutableStateOf(modeldb.title) }
     val changeText by remember { mutableStateOf(modeldb.text) }
@@ -50,7 +56,7 @@ fun FullAboutScreen(
         AboutTopAppBar(
             navController,
             onClick,
-            Modeldb(id = id, title = title, text = text, selected = modeldb.selected),
+            modeldb = Modeldb(id = id, title = title, text = text, selected = modeldb.selected),
             checkState = checkState,
             changeStateFun = { checkState = false },
             roomDoing = if (changeTitle == "" && changeText == "") {
@@ -61,9 +67,16 @@ fun FullAboutScreen(
             titleValue = title,
             textValue = text,
             updateBackground = updateBackground,
-            updateBackgroundBoolean = updateBackgroundBoolean
+            updateBackgroundBoolean = updateBackgroundBoolean,
+            backStackFun = { back ->
+                backStack = back
+            },
+            changeModeldb = {modeldb = it},
+            closeForeground = { closeForeground(it) },
+            navigateToFullScreen = {navController.navigate(Route.FullAboutScreen.route)}
         )
     }) {
+        if (backStack) Log.e("Log", "first") else Log.e("Log", "second")
         Column {
             OutlinedTextField(
                 modifier = Modifier.width(500.dp),

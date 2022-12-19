@@ -1,7 +1,8 @@
 package com.example.note.ui.graphs
 
-import android.content.SharedPreferences
 import androidx.activity.ComponentActivity
+import androidx.compose.material.BackdropScaffoldState
+import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -9,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.note.MainScreenViewModel
-import com.example.note.isFirstLaunch
 import com.example.note.ui.screens.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -20,6 +20,7 @@ fun MainNavGraph(navController: NavHostController,LessState:(unit:Unit)->Unit) {
     val viewModel: MainScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         LocalContext.current as ComponentActivity
     )
+    var backdropScaffoldState by remember{ mutableStateOf(BackdropScaffoldState(BackdropValue.Revealed)) }
     NavHost(
         navController = navController,
         route = Route.Root.route,
@@ -52,15 +53,27 @@ fun MainNavGraph(navController: NavHostController,LessState:(unit:Unit)->Unit) {
         }
 
         composable(route = Route.FullAboutScreen.route) {
-            FullAboutScreen(navController = navController, onClick = {
-                navController.popBackStack(Route.FullAboutScreen.route, inclusive = true)
+            FullAboutScreen(navController = navController, onClick =
+                if (viewModel.startDestination.value == Route.FullAboutScreen.route) {
+                    {
+                        navController.popBackStack(Route.FullAboutScreen.route, inclusive = true)
+                    }
+                } else {
+                    {
+                        //navController.popBackStack(Route.LessAboutScreen.route, inclusive = true)
+                        navController.navigate(Route.LessAboutScreen.route)
+                    }
+                //navController.popBackStack(Route.FullAboutScreen.route, inclusive = true)
             })
         }
-
+//TODO("Make backAboutScreen. it is return lessAboutScreen to clear value")
         composable(route = Route.LessAboutScreen.route) {
-            saveState = LessAboutScreen(
+            LessAboutScreen(
                 onClick = { navController.navigate(Route.LessAboutScreen.route) },
-                navigateTo = Route.MainScreen.route
+                navigateTo = Route.MainScreen.route,
+                scaffoldStateUpdate = {backdropScaffoldState = it},
+                scaffoldState = backdropScaffoldState,
+                backAboutScreen ={navController.navigate(Route.LessAboutScreen.route)}
             )
         }
 

@@ -6,9 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,12 +22,14 @@ import com.example.note.ui.graphs.Route
 import com.example.note.ui.theme.NoteTheme
 
 //карточка(сама заметка) на главном экране и экране избранного
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun noteCard(
     modeldb: Modeldb,
     navController: NavHostController = rememberNavController(),
     onClick: () -> Unit = {},
-    mainViewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity)
+    mainViewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity),
+    scaffoldStateUpdate: (scaffoldState: BackdropScaffoldState)->Unit = {}
 ) {
     Surface(
         modifier = Modifier
@@ -37,6 +37,7 @@ fun noteCard(
             .clickable {
                 mainViewModel.setModeldb(modeldb)
                 onClick()
+                scaffoldStateUpdate(BackdropScaffoldState(BackdropValue.Concealed))
             }
             .border(color = MaterialTheme.colors.error, width = 4.dp),
         shape = MaterialTheme.shapes.medium,
