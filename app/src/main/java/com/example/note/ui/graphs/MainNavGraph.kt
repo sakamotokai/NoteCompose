@@ -73,7 +73,10 @@ fun MainNavGraph(navController: NavHostController,LessState:(unit:Unit)->Unit) {
                 navigateTo = Route.MainScreen.route,
                 scaffoldStateUpdate = {backdropScaffoldState = it},
                 scaffoldState = backdropScaffoldState,
-                backAboutScreen ={navController.navigate(Route.LessAboutScreen.route)}
+                backAboutScreen ={navController.navigate(Route.LessAboutScreen.route)},
+                closeBackDrop = {backdropState ->
+                    backdropScaffoldState = backdropState
+                }
             )
         }
 

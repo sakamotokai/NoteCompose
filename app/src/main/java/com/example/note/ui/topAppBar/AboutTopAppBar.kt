@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -34,12 +35,14 @@ fun AboutTopAppBar(
     textValue: String,
     updateBackground: () -> Unit = {},
     updateBackgroundBoolean: Boolean = false,
-    backStackFun:(backStack:Boolean)->Unit = {},
-    closeForeground:(value:BackdropScaffoldState)->Unit = {},
-    changeModeldb:(modeldb:Modeldb)->Unit = {},
-    navigateToFullScreen:()->Unit={}
+    backStackFun: (backStack: Boolean) -> Unit = {},
+    closeForeground: (value: BackdropScaffoldState) -> Unit = {},
+    changeModeldb: (modeldb: Modeldb) -> Unit = {},
+    navigateToFullScreen: () -> Unit = {},
+    visibleDeleteButton: Boolean = false
 ) {
     val context = LocalContext.current
+    val modelDB = modeldb
     //var changeState1 by remember{ mutableStateOf(changeState) }
     Column {
         TopAppBar(
@@ -47,6 +50,7 @@ fun AboutTopAppBar(
             elevation = 4.dp,
             backgroundColor = MaterialTheme.colors.primarySurface,
             navigationIcon = {
+
                 IconButton(onClick = {
                     mainViewModel.setModeldb(Modeldb())
                     //changeModeldb(Modeldb())
@@ -61,11 +65,22 @@ fun AboutTopAppBar(
                     //modeldb = Modeldb()
                 }) {
                     Icon(Icons.Filled.ArrowBack, null)
+
                 }
             },
             actions = {
+                if (visibleDeleteButton) {
+                    IconButton(onClick = { mainViewModel.deleteNote(modeldb)
+                        mainViewModel.setModeldb(Modeldb())
+                        //changeModeldb(Modeldb())
+                        closeForeground(BackdropScaffoldState(BackdropValue.Revealed))
+                        onClick()}) {
+                        Icon(Icons.Filled.Delete, null)
+                    }
+                }
                 IconButton(onClick = {
-                    Toast.makeText(context, modeldb.selected.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, modeldb.selected.toString(), Toast.LENGTH_SHORT)
+                        .show()
                     mainViewModel.updateNote(
                         Modeldb(
                             id = modeldb.id,
@@ -79,7 +94,7 @@ fun AboutTopAppBar(
                 }) {
                     Icon(Icons.Filled.Star, null)
                 }
-                if (checkState) {
+                if (checkState/*modeldb.text != modelDB.text || modelDB.title != modelDB.title*/) {
                     IconButton(onClick = {
                         if (titleValue == "" && textValue == "") {
                             mainViewModel.deleteNote(modeldb)
@@ -97,6 +112,7 @@ fun AboutTopAppBar(
                     }) {
                         Icon(Icons.Filled.Check, null)
                     }
+
                 }
             }
         )

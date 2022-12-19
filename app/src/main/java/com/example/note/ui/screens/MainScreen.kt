@@ -5,6 +5,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.DraggableState
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -116,6 +121,7 @@ fun LessAboutScreen(
     scaffoldStateUpdate: (scaffoldState: BackdropScaffoldState) -> Unit = {},
     scaffoldState: BackdropScaffoldState = BackdropScaffoldState(BackdropValue.Revealed),
     backAboutScreen: () -> Unit = {},
+    closeBackDrop: (backdropState: BackdropScaffoldState) -> Unit = {}
 ) {
     var backdropScaffoldState by remember { mutableStateOf(scaffoldState) }
     BackdropScaffold(
@@ -146,13 +152,18 @@ fun LessAboutScreen(
                 updateBackground = updateBackground,
                 updateBackgroundBoolean = updateBackgroundBoolean,
                 onClick = backAboutScreen,
-                closeForeground = {backdropScaffoldState = it}
+                closeForeground = {
+                    backdropScaffoldState = it
+                    closeBackDrop(it)
+                },
+                foregroundState = backdropScaffoldState
             )
         },
         peekHeight = 60.dp,
         headerHeight = 160.dp,
-        modifier = Modifier.background(MaterialTheme.colors.background)
-    ) {
-
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+    )
+    {
     }
 }

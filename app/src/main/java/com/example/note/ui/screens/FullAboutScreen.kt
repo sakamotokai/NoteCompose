@@ -41,6 +41,7 @@ fun FullAboutScreen(
     updateBackgroundBoolean: Boolean = false,
     backStackFun: (backStack: Boolean) -> Unit = {},
     closeForeground: (value: BackdropScaffoldState) -> Unit = {},
+    foregroundState:BackdropScaffoldState = BackdropScaffoldState(BackdropValue.Revealed)
 ) {
     var backStack by remember { mutableStateOf(false) }
     var modeldb = mainViewModel.getModeldb()
@@ -73,7 +74,9 @@ fun FullAboutScreen(
             },
             changeModeldb = {modeldb = it},
             closeForeground = { closeForeground(it) },
-            navigateToFullScreen = {navController.navigate(Route.FullAboutScreen.route)}
+            navigateToFullScreen = {navController.navigate(Route.FullAboutScreen.route)},
+            visibleDeleteButton =
+            if(text!=Modeldb().text||title!=Modeldb().title) true else false
         )
     }) {
         if (backStack) Log.e("Log", "first") else Log.e("Log", "second")
@@ -83,7 +86,7 @@ fun FullAboutScreen(
                 value = title,
                 onValueChange = {
                     title = it
-                    checkState = true
+                    checkState = if(it != changeTitle) true else false
                     if (it == "") openTitle = true
                 }
             )
@@ -92,7 +95,7 @@ fun FullAboutScreen(
                 value = text,
                 onValueChange = {
                     text = it
-                    checkState = true
+                    checkState = if(it != changeText) true else false
                     if (it == "") openText = true
                 },
                 modifier = Modifier.fillMaxSize()
